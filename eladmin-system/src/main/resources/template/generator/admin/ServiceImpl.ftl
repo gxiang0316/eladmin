@@ -1,21 +1,20 @@
 package ${package}.service.impl;
 
-import ${package}.domain.${className};
+import ${package}.entity.${className};
 <#if columns??>
     <#list columns as column>
         <#if column.columnKey = 'UNI'>
             <#if column_index = 1>
-import me.zhengjie.exception.EntityExistException;
+import com.kedacom.pacc.handler.EntityExistException;
             </#if>
         </#if>
     </#list>
 </#if>
-import me.zhengjie.utils.ValidationUtil;
-import ${package}.repository.${className}Repository;
+import com.kedacom.pacc.utils.ValidationUtil;
+import ${package}.dao.${className}Dao;
 import ${package}.service.${className}Service;
-import ${package}.service.dto.${className}DTO;
-import ${package}.service.dto.${className}QueryCriteria;
-import ${package}.service.mapper.${className}Mapper;
+import ${package}.dto.${className}DTO;
+import ${package}.mapper.${className}Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,13 +24,6 @@ import java.util.Optional;
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 </#if>
-<#if !auto && pkColumnType = 'String'>
-import cn.hutool.core.util.IdUtil;
-</#if>
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import me.zhengjie.utils.PageUtil;
-import me.zhengjie.utils.QueryHelp;
 
 /**
 * @author ${author}
@@ -42,27 +34,16 @@ import me.zhengjie.utils.QueryHelp;
 public class ${className}ServiceImpl implements ${className}Service {
 
     @Autowired
-    private ${className}Repository ${changeClassName}Repository;
+    private ${className}Dao ${changeClassName}Dao;
 
     @Autowired
     private ${className}Mapper ${changeClassName}Mapper;
 
     @Override
-    public Object queryAll(${className}QueryCriteria criteria, Pageable pageable){
-        Page<${className}> page = ${changeClassName}Repository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
-        return PageUtil.toPage(page.map(${changeClassName}Mapper::toDto));
-    }
-
-    @Override
-    public Object queryAll(${className}QueryCriteria criteria){
-        return ${changeClassName}Mapper.toDto(${changeClassName}Repository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder)));
-    }
-
-    @Override
     public ${className}DTO findById(${pkColumnType} ${pkChangeColName}) {
-        Optional<${className}> ${changeClassName} = ${changeClassName}Repository.findById(${pkChangeColName});
-        ValidationUtil.isNull(${changeClassName},"${className}","${pkChangeColName}",${pkChangeColName});
-        return ${changeClassName}Mapper.toDto(${changeClassName}.get());
+        ${className} ${changeClassName} = ${changeClassName}Dao.findById(${pkChangeColName});
+        ValidationUtil.isNull("${className}","${pkChangeColName}",${pkChangeColName});
+        return ${changeClassName}Mapper.toDto(${changeClassName});
     }
 
     @Override
@@ -78,29 +59,27 @@ public class ${className}ServiceImpl implements ${className}Service {
 <#if columns??>
     <#list columns as column>
     <#if column.columnKey = 'UNI'>
-        if(${changeClassName}Repository.findBy${column.capitalColumnName}(resources.get${column.capitalColumnName}()) != null){
+        if(${changeClassName}Dao.findBy${column.capitalColumnName}(resources.get${column.capitalColumnName}()) != null){
             throw new EntityExistException(${className}.class,"${column.columnName}",resources.get${column.capitalColumnName}());
         }
     </#if>
     </#list>
 </#if>
-        return ${changeClassName}Mapper.toDto(${changeClassName}Repository.save(resources));
+        return ${changeClassName}Mapper.toDto(${changeClassName}Dao.save(resources));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(${className} resources) {
-        Optional<${className}> optional${className} = ${changeClassName}Repository.findById(resources.get${pkCapitalColName}());
-        ValidationUtil.isNull( optional${className},"${className}","id",resources.get${pkCapitalColName}());
-
-        ${className} ${changeClassName} = optional${className}.get();
+        ${className} ${changeClassName} = ${changeClassName}Dao.findById(resources.get${pkCapitalColName}());
+        ValidationUtil.isNull("${className}","id",resources.get${pkCapitalColName}());
 <#if columns??>
     <#list columns as column>
         <#if column.columnKey = 'UNI'>
         <#if column_index = 1>
         ${className} ${changeClassName}1 = null;
         </#if>
-        ${changeClassName}1 = ${changeClassName}Repository.findBy${column.capitalColumnName}(resources.get${column.capitalColumnName}());
+        ${changeClassName}1 = ${changeClassName}Dao.findBy${column.capitalColumnName}(resources.get${column.capitalColumnName}());
         if(${changeClassName}1 != null && !${changeClassName}1.get${pkCapitalColName}().equals(${changeClassName}.get${pkCapitalColName}())){
             throw new EntityExistException(${className}.class,"${column.columnName}",resources.get${column.capitalColumnName}());
         }
@@ -109,12 +88,12 @@ public class ${className}ServiceImpl implements ${className}Service {
 </#if>
         // 此处需自己修改
         resources.set${pkCapitalColName}(${changeClassName}.get${pkCapitalColName}());
-        ${changeClassName}Repository.save(resources);
+        ${changeClassName}Dao.save(resources);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(${pkColumnType} ${pkChangeColName}) {
-        ${changeClassName}Repository.deleteById(${pkChangeColName});
+        ${changeClassName}Dao.deleteById(${pkChangeColName});
     }
 }

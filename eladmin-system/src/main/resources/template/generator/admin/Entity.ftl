@@ -1,6 +1,9 @@
-package ${package}.domain;
+package ${package}.entity;
 
 import lombok.Data;
+import com.kedacom.kidp.base.data.common.entity.BaseEntity;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 <#if hasTimestamp>
 import java.sql.Timestamp;
@@ -8,7 +11,6 @@ import java.sql.Timestamp;
 <#if hasBigDecimal>
 import java.math.BigDecimal;
 </#if>
-import java.io.Serializable;
 
 /**
 * @author ${author}
@@ -17,20 +19,20 @@ import java.io.Serializable;
 @Entity
 @Data
 @Table(name="${tableName}")
-public class ${className} implements Serializable {
+@EntityListeners(AuditingEntityListener.class)
+public class ${className} extends BaseEntity {
 <#if columns??>
     <#list columns as column>
-
+    <#if column.columnName = 'id' || column.columnName = "created_by" || column.columnName = "created_time">
+        <#continue>
+    </#if>
+    <#if column.columnName = 'version' || column.columnName = "updated_by" || column.columnName = "updated_time">
+        <#continue>
+    </#if>
     <#if column.columnComment != ''>
     /**
      * ${column.columnComment}
      */
-    </#if>
-    <#if column.columnKey = 'PRI'>
-    @Id
-    <#if auto>
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    </#if>
     </#if>
     @Column(name = "${column.columnName}"<#if column.columnKey = 'UNI'>,unique = true</#if><#if column.isNullable = 'NO' && column.columnKey != 'PRI'>,nullable = false</#if>)
     private ${column.columnType} ${column.changeColumnName};

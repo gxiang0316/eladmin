@@ -1,4 +1,4 @@
-package ${package}.service.dto;
+package ${package}.dto;
 
 import lombok.Data;
 <#if hasTimestamp>
@@ -22,7 +22,12 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 public class ${className}DTO implements Serializable {
 <#if columns??>
     <#list columns as column>
-
+        <#if column.columnName = "created_by" || column.columnName = "created_time">
+            <#continue>
+        </#if>
+        <#if column.columnName = "updated_by" || column.columnName = "updated_time">
+            <#continue>
+        </#if>
     <#if column.columnComment != ''>
     /**
      * ${column.columnComment}

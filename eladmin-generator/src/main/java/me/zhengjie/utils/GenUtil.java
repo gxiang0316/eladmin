@@ -41,11 +41,11 @@ public class GenUtil {
         templateNames.add("Entity");
         templateNames.add("Dto");
         templateNames.add("Mapper");
-        templateNames.add("Repository");
+        templateNames.add("Dao");
         templateNames.add("Service");
         templateNames.add("ServiceImpl");
-        templateNames.add("QueryCriteria");
-        templateNames.add("Controller");
+        //templateNames.add("QueryCriteria");
+        //templateNames.add("Controller");
         return templateNames;
     }
 
@@ -181,12 +181,12 @@ public class GenUtil {
         }
 
         if ("Entity".equals(templateName)) {
-            return packagePath + "domain" + File.separator + className + ".java";
+            return packagePath + "entity" + File.separator + className + ".java";
         }
 
-        if ("Controller".equals(templateName)) {
-            return packagePath + "rest" + File.separator + className + "Controller.java";
-        }
+//        if ("Controller".equals(templateName)) {
+//            return packagePath + "rest" + File.separator + className + "Controller.java";
+//        }
 
         if ("Service".equals(templateName)) {
             return packagePath + "service" + File.separator + className + "Service.java";
@@ -197,19 +197,19 @@ public class GenUtil {
         }
 
         if ("Dto".equals(templateName)) {
-            return packagePath + "service" + File.separator + "dto" + File.separator + className + "DTO.java";
+            return packagePath  + File.separator + "dto" + File.separator + className + "DTO.java";
         }
 
-        if ("QueryCriteria".equals(templateName)) {
-            return packagePath + "service" + File.separator + "dto" + File.separator + className + "QueryCriteria.java";
-        }
+//        if ("QueryCriteria".equals(templateName)) {
+//            return packagePath + "service" + File.separator + "dto" + File.separator + className + "QueryCriteria.java";
+//        }
 
         if ("Mapper".equals(templateName)) {
-            return packagePath + "service" + File.separator + "mapper" + File.separator + className + "Mapper.java";
+            return packagePath + File.separator + "mapper" + File.separator + className + "Mapper.java";
         }
 
-        if ("Repository".equals(templateName)) {
-            return packagePath + "repository" + File.separator + className + "Repository.java";
+        if ("Dao".equals(templateName)) {
+            return packagePath + "dao" + File.separator + className + "Dao.java";
         }
 
         return null;
